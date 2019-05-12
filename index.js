@@ -9,13 +9,15 @@ module.exports = function(app, options) {
         let search = {};
         if (query && query.q) {
           if (model.fields.length === 1) {
-            search = {[model.fields[0]]: {ilike: `%${query.q}%`}};
+            search = {[model.fields[0]]: new RegExp(query.q, 'i')}; // !!! case insensitive 
           } else {
             let searches = [];
             model.fields.map(field => {
-              searches.push({[field]: {ilike: `%${query.q}%`}});
+              searches.push({[field]: new RegExp(query.q, 'i')}); // !!! case insensitive 
             });
-            search = {or: searches};
+            search = {
+              or: searches
+            };
           }
           delete fields.where.q;
           if (Object.keys(fields.where).length !== 0) {
